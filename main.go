@@ -27,12 +27,12 @@ func main() {
 			pkCofing.InitConfig(cmd.Env)
 			//bootstrap.SetupCache()
 			bootstrap.SetupLogger()
-			bootstrap.SetupDB()
+			//bootstrap.SetupDB()
 			//bootstrap.SetUpEtcd()
 		},
 	}
 	//注册子命令
-	rootCmd.AddCommand(cmd.HttpServer, cmd.WebSocketServer, cmdMake.CmdMake, cmd.TcpServer, cmd.UdpServer)
+	rootCmd.AddCommand(cmd.HttpServer, cmd.WebSocketServer, cmdMake.CmdMake, cmd.TcpServer, cmd.UdpServer,cmd.RPCServer)
 	cmd.RegisterDefaultCmd(rootCmd, cmd.HttpServer)
 	cmd.RegisterGlobalFlags(rootCmd)
 	if err := rootCmd.Execute(); err != nil {
