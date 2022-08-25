@@ -1,0 +1,53 @@
+//Package {{PackageName}} 模型
+package {{PackageName}}
+
+import (
+
+    "skframe/app/models"
+    "skframe/pkg/database"
+    "gorm.io/gorm"
+)
+
+type {{StructName}} struct {
+    models.BaseModel
+
+    models.CommonTimestampsField
+}
+
+func ({{VariableName}} *{{StructName}}) Create(tx *gorm.DB) error  {
+     if tx != nil {
+       return tx.Create({{VariableName}}).Error
+    }else{
+       return database.DB.Create({{VariableName}}).Error
+    }
+}
+
+func ({{VariableName}} *{{StructName}}) CreateBatch(batch []{{StructName}},tx *gorm.DB) error {
+      if tx != nil {
+        return  tx.Create(batch).Error
+      }else{
+        return database.DB.Create(batch).Error
+      }
+}
+
+func ({{VariableName}} *{{StructName}}) Del(opt models.SqlOpt , tx *gorm.DB) error {
+    if tx == nil {
+        tx =  database.DB
+    }
+    for key,val := range  opt.Where{
+        tx = tx.Where(key,val)
+    }
+    return tx.Delete({{StructName}}{}).Error
+}
+
+func ({{VariableName}} *{{StructName}}) Update(data map[string]interface{}, where map[string]interface{} , tx *gorm.DB) error {
+    if tx == nil {
+        tx =  database.DB
+    }
+    for key,val := range where{
+        tx = tx.Where(key,val)
+    }
+    return tx.Model({{StructName}}{}).Updates(data).Error
+}
+
+
