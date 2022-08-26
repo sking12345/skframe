@@ -18,3 +18,5 @@ service StudentService {
   //查询学生信息服务
   rpc GetStudent (StudentRequest) returns (Student);
 }
+
+// protoc --proto_path=. --go_out=. --micro_out=. *.proto

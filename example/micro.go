@@ -4,10 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/registry"
-	"github.com/micro/go-plugins/registry/consul"
+	"go-micro.dev/v4"
 	"skframe/app/protobuffs/Student"
+	"skframe/pkg/rpc"
 	"time"
 )
 
@@ -35,45 +34,34 @@ func (*StudentManager) GetStudent(ctx context.Context, request *Student.StudentR
 	return errors.New("未查询到相关学生信息")
 }
 
-func microServer() {
-	consulReg := consul.NewRegistry( //新建一个consul注册的地址，也就是我们consul服务启动的机器ip+端口
-		registry.Addrs("127.0.0.1:8500"),
-	)
-	server := micro.NewService( //创建一个新的服务对象
-		micro.Name("student"),
-		micro.Version("v1.0.0"),
-		micro.Registry(consulReg),
-		micro.RegisterTTL(10*time.Second),
-		micro.RegisterInterval(5*time.Second),
-	)
+func MicroServer() {
+	rpc := rpc.Micro{}
+	rpc.NewServer("127.0.0.1:8500","student.server", func(service micro.Service) {
+		Student.RegisterStudentServiceHandler(service.Server(),new(StudentManager))
 
-	server.Init()
-	Student.RegisterStudentServiceHandler(server.Server(), new(StudentManager))
-	err := server.Run()
-	if err != nil {
-		fmt.Println(err)
-	}
+	})
+
 }
 
-func microClient() {
-	consulReg := consul.NewRegistry( //新建一个consul注册的地址，也就是我们consul服务启动的机器ip+端口
-		registry.Addrs("127.0.0.1:8500"),
-	)
-	service := micro.NewService(
-		micro.Name("student.client"),
-		micro.Registry(consulReg),
-	)
-	service.Init()
-
-	studentService := Student.NewStudentServiceClient("student_service", service.Client())
-	res, err := studentService.GetStudent(context.TODO(), &Student.StudentRequest{Name: "davie"})
-	if err != nil {
+func MicroClient() {
+	rpc := rpc.Micro{}
+	rpc.NewClient("127.0.0.1:8500", func(service micro.Service) {
+		client := Student.NewStudentService("student.server",service.Client())
+		test1,err := client.GetStudent(context.TODO(),&Student.StudentRequest{Name: "davie"})
 		fmt.Println(err)
-		return
-	}
-	fmt.Println(res.Name)
-	fmt.Println(res.Classes)
-	fmt.Println(res.Grade)
-	time.Sleep(50 * time.Second)
+		fmt.Println(test1)
+	})
+}
 
+func TestMicro()  {
+	go func() {
+		MicroServer()
+		fmt.Println("xxx")
+		time.Sleep(20 * time.Second)
+	}()
+
+	time.Sleep(5 *time.Second)
+	MicroClient()
+	time.Sleep(10 * time.Second)
+	return
 }

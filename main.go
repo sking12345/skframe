@@ -18,6 +18,8 @@ func init() {
 
 func main() {
 
+
+
 	var rootCmd = &cobra.Command{
 		Use:   "skFrame",
 		Short: "A simple forum project",
@@ -32,7 +34,13 @@ func main() {
 		},
 	}
 	//注册子命令
-	rootCmd.AddCommand(cmd.HttpServer, cmd.WebSocketServer, cmdMake.CmdMake, cmd.TcpServer, cmd.UdpServer,cmd.RPCServer)
+	rootCmd.AddCommand(cmd.HttpServer,
+		cmd.WebSocketServer,
+		cmdMake.CmdMake,
+		cmd.TcpServer,
+		cmd.UdpServer,
+		//cmd.RPCServer,
+	)
 	cmd.RegisterDefaultCmd(rootCmd, cmd.HttpServer)
 	cmd.RegisterGlobalFlags(rootCmd)
 	if err := rootCmd.Execute(); err != nil {
