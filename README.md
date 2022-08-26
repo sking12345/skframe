@@ -3,6 +3,13 @@
 ## 支持同一套业务对 tcp,udp,http,rpc 的全面支持 
 ## 支持命令创建model (go run main.go make model table_name)
 
+## 启动服务
+### 1: go run main.go http (默认)
+### 2: go run main.go tcp 
+### 3: go run main.go udp
+### 4: go run main.go websocket
+### 5: go run main.go rpc
+
 ## 待处理:
 ### 1:windows环境下 对 tcp,udp 支持的重构， 
 ### 2:websocket 的重构
