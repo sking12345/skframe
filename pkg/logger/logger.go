@@ -9,6 +9,7 @@ import (
 	"os"
 	"skframe/pkg/app"
 	"skframe/pkg/config"
+	"skframe/pkg/console"
 	"strings"
 	"time"
 )
@@ -127,6 +128,9 @@ func LogIf(err error) {
 	if err != nil {
 		Logger.Error("Error Occurred:", zap.Error(err))
 	}
+	if config.GetBool("app.debug") == true {
+		console.Error(fmt.Sprintf("%s", err))
+	}
 }
 
 // LogWarnIf 当 err != nil 时记录 warning 等级的日志
@@ -134,12 +138,18 @@ func LogWarnIf(err error) {
 	if err != nil {
 		Logger.Warn("Error Occurred:", zap.Error(err))
 	}
+	if config.GetBool("app.debug") == true {
+		console.Warning(fmt.Sprintf("%s", err))
+	}
 }
 
 // LogInfoIf 当 err != nil 时记录 info 等级的日志
 func LogInfoIf(err error) {
 	if err != nil {
 		Logger.Info("Error Occurred:", zap.Error(err))
+	}
+	if config.GetBool("app.debug") == true {
+		console.Info(fmt.Sprintf("%s", err))
 	}
 }
 

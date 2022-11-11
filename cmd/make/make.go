@@ -24,6 +24,7 @@ var stubsFS embed.FS
 
 func init() {
 	CmdMake.AddCommand(CmdMakeModel)
+	CmdMake.AddCommand(CmdMakeController)
 }
 
 type Model struct {
@@ -36,7 +37,7 @@ type Model struct {
 }
 
 // makeModelFromString 格式化用户输入的内容
-func makeModelFromString(name string) Model {
+func MakeModelFromString(name string) Model {
 
 	model := Model{}
 	//model.StructName = str.Singular(strcase.ToCamel(name))
@@ -51,7 +52,7 @@ func makeModelFromString(name string) Model {
 
 // createFileFromStub 读取 stub 文件并进行变量替换
 // 最后一个选项可选，如若传参，应传 map[string]string 类型，作为附加的变量搜索替换
-func createFileFromStub(filePath string, stubName string, model Model, variables ...interface{}) {
+func CreateFileFromStub(filePath string, stubName string, model Model, variables ...interface{}) {
 
 	// 实现最后一个参数可选
 	replaces := make(map[string]string)

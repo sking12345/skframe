@@ -1,4 +1,4 @@
-package controlles
+package controllers
 
 type baseController struct {
 }

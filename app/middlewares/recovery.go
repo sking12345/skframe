@@ -52,7 +52,6 @@ func Recovery() gin.HandlerFunc {
 					zap.String("request", string(httpRequest)), // 请求信息
 					zap.Stack("stacktrace"),                    // 调用堆栈信息
 				)
-
 			}
 		}()
 		c.Next()

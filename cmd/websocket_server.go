@@ -1,15 +1,7 @@
 package cmd
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
-	"net/http"
-	"skframe/pkg/config"
-	"skframe/pkg/logger"
-	"skframe/pkg/ws"
-	"skframe/routes"
 )
 
 //CmdHttpServer
@@ -22,32 +14,32 @@ var WebSocketServer = &cobra.Command{
 }
 
 func runWebSocketServer(cmd *cobra.Command, args []string) {
-	gin.SetMode(gin.ReleaseMode)
-	req := gin.Default()
-	wsCtx := ws.Engine{}
-	routes.RegisterSocketRoutes(&wsCtx)
-	path := config.GetString("ws.path")
-	req.Any("/"+path, func(ctx *gin.Context) {
-		upgrader := websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
-			return true
-		}}
-		conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
-		defer conn.Close()
-		if err != nil {
-			logger.Error("websocket server", zap.Error(err))
-			return
-		}
-		clientCtx := wsCtx.NewConnect(conn)
-		for {
-			_, data, err := conn.ReadMessage()
-			if err != nil {
-				logger.Info("websocket server", zap.Error(err))
-				wsCtx.CloseConnect(clientCtx)
-				return
-			}
-			wsCtx.NewMessage(data, clientCtx)
-		}
-	})
-	req.Run(":" + config.GetString("ws.port"))
+	//gin.SetMode(gin.ReleaseMode)
+	//req := gin.Default()
+	//wsCtx := ws.Engine{}
+	//
+	//path := config.GetString("ws.path")
+	//req.Any("/"+path, func(ctx *gin.Context) {
+	//	upgrader := websocket.Upgrader{CheckOrigin: func(r *http.Request) bool {
+	//		return true
+	//	}}
+	//	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	//	defer conn.Close()
+	//	if err != nil {
+	//		logger.Error("websocket server", zap.Error(err))
+	//		return
+	//	}
+	//	clientCtx := wsCtx.NewConnect(conn)
+	//	for {
+	//		_, data, err := conn.ReadMessage()
+	//		if err != nil {
+	//			logger.Info("websocket server", zap.Error(err))
+	//			wsCtx.CloseConnect(clientCtx)
+	//			return
+	//		}
+	//		wsCtx.NewMessage(data, clientCtx)
+	//	}
+	//})
+	//req.Run(":" + config.GetString("ws.port"))
 
 }

@@ -47,6 +47,7 @@ func validate(data interface{}, rules govalidator.MapData, messages govalidator.
 		TagIdentifier: "valid", // 模型中的 Struct 标签标识符
 		Messages:      messages,
 	}
+
 	// 开始验证
 	return govalidator.New(opts).ValidateStruct()
 }

@@ -1,0 +1,94 @@
+package controllers
+
+import (
+	"github.com/gin-gonic/gin"
+	"skframe/app/requests"
+	"skframe/pkg/logger"
+	"skframe/pkg/response"
+	"skframe/pkg/try"
+	"skframe/app/models"
+	"skframe/app/models/{{PackageName}}"
+)
+
+type {{StructName}}Controller struct {
+	baseController
+}
+
+func (*{{StructName}}Controller) Add(ctx *gin.Context){
+    request := requests.{{StructName}}SaveRequest{}
+	if ok := requests.Validate(ctx, &request, requests.{{StructName}}SaveRequestVer, "数据验证错误"); ok == false {
+		return
+	}
+	try.NewTry(func() {
+	    mdl := {{PackageName}}.{{StructName}}{
+
+	    }
+	    if err := mdl.Save(nil); err != nil {
+	        logger.LogIf(err)
+        	panic("新增失败")
+        }
+
+	    response.Success(ctx, nil)
+	}).Catch(func(err interface{}) {
+      		response.Fail(ctx, err)
+    }).Run()
+}
+func (*{{StructName}}Controller) Update(ctx *gin.Context){
+   request := requests.{{StructName}}SaveRequest{}
+	if ok := requests.Validate(ctx, &request, requests.{{StructName}}SaveRequestVer, "数据验证错误"); ok == false {
+		return
+	}
+	try.NewTry(func() {
+       mdl := {{PackageName}}.{{StructName}}{
+
+        }
+        mdl.ID = request.Id
+    	if err := mdl.Save(nil); err != nil {
+    	   logger.LogIf(err)
+           panic("新增失败")
+        }
+	    response.Success(ctx, nil)
+	}).Catch(func(err interface{}) {
+      		response.Fail(ctx, err)
+    }).Run()
+}
+
+func (*{{StructName}}Controller) Del(ctx *gin.Context){
+      request := requests.{{StructName}}DelRequest{}
+      if ok := requests.Validate(ctx, &request, requests.{{StructName}}DelRequestVer, "数据验证错误"); ok == false {
+    		return
+     }
+    try.NewTry(func() {
+    	mdl := {{PackageName}}.{{StructName}}{
+    			Del: models.DelStatus.YES,
+    		}
+        mdl.ID = request.Id
+    	if err := mdl.Save(nil); err != nil {
+    		logger.LogIf(err)
+    		panic("删除失败")
+    	}
+
+    	response.Success(ctx, nil)
+    }).Catch(func(err interface{}) {
+         response.Fail(ctx, err)
+    }).Run()
+}
+
+func (*{{StructName}}Controller) GetList(ctx *gin.Context){
+      request := requests.{{StructName}}GetListRequest{}
+      if ok := requests.Validate(ctx, &request, requests.{{StructName}}GetListRequestVer, "数据验证错误"); ok == false {
+    		return
+     }
+    try.NewTry(func() {
+    	count, list := {{PackageName}}.Paginate(models.SqlOpt{
+    			Field: "*",
+    			Where: map[string]interface{}{"del = ?": models.DelStatus.NO},
+    	    }, request.Page, request.Size)
+    	response.Success(ctx, map[string]interface{}{
+    		"count": count,
+    		"list":  list,
+    	})
+    }).Catch(func(err interface{}) {
+        response.Fail(ctx, err)
+   }).Run()
+}

@@ -15,8 +15,9 @@ func First(opt models.SqlOpt,tx *gorm.DB,share bool) ({{VariableName}} {{StructN
     }else{
         tx = tx.Clauses(clause.Locking{Strength:"UPDATE"}) //排他锁,禁止其他读，当前会修改
     }
-    for key,val := range opt.Where {
-        tx = tx.Where(key,val)
+
+   	for key, val := range opt.Where {
+      tx = tx.Where(key,val)
     }
     if opt.Order != "" {
         tx = tx.Order(opt.Order)
@@ -33,9 +34,9 @@ func Find(opt models.SqlOpt,tx *gorm.DB,share bool) ({{VariableName}} []{{Struct
     }else{
         tx = tx.Clauses(clause.Locking{Strength:"UPDATE"}) //排他锁,禁止其他读，当前会修改
     }
-    for key,val := range opt.Where {
-        tx = tx.Where(key,val)
-    }
+     for key, val := range opt.Where {
+  		tx = tx.Where(key,val)
+  	}
     if opt.Order != "" {
         tx = tx.Order(opt.Order)
     }
@@ -52,9 +53,10 @@ func Find(opt models.SqlOpt,tx *gorm.DB,share bool) ({{VariableName}} []{{Struct
 
 func IsExist(where map[string]interface{}) bool {
     tx := database.DB
-    for key,val := range where {
-        tx = tx.Where(key,val)
-    }
+
+     for key, val := range where {
+           tx = tx.Where(key,val)
+     }
     var count int64
     tx.Model({{StructName}}{}).Count(&count)
     return count > 0
@@ -68,7 +70,7 @@ func Count(opt models.SqlOpt,tx *gorm.DB,share bool) (count int64) {
     }else{
         tx = tx.Clauses(clause.Locking{Strength:"UPDATE"}) //排他锁,禁止其他读，当前会修改
     }
-    for key,val := range opt.Where {
+    for key, val := range opt.Where {
         tx = tx.Where(key,val)
     }
     tx.Model({{StructName}}{}).Count(&count)
@@ -77,10 +79,28 @@ func Count(opt models.SqlOpt,tx *gorm.DB,share bool) (count int64) {
 
 func Paginate(opt models.SqlOpt, pages, size int) (count int64, list []{{StructName}}) {
 	dbTx := database.DB.Model({{StructName}}{}).Select(opt.Field)
-	for key, val := range opt.Where {
-		dbTx = dbTx.Where(key, val)
-	}
+    for key, val := range opt.Where {
+  		dbTx = dbTx.Where(key,val)
+  	}
 	dbTx.Count(&count)
-	dbTx.Offset(pages*size - pages).Limit(size).Find(&list)
+	dbTx.Offset(pages*size - size).Limit(size).Find(&list)
 	return
 }
+
+
+func  CreateBatch(batch []{{StructName}},tx *gorm.DB) error {
+      if tx != nil {
+        return  tx.Create(batch).Error
+      }else{
+        return database.DB.Create(batch).Error
+      }
+}
+
+func Del( opt models.SqlOpt , tx *gorm.DB) error {
+    if tx == nil {
+        tx =  database.DB
+    }
+   tx = tx.Where(opt.Where)
+    return tx.Delete({{StructName}}{}).Error
+}
+

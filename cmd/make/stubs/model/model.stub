@@ -10,44 +10,20 @@ import (
 
 type {{StructName}} struct {
     models.BaseModel
-
+    #filedInfos
+    Del            uint8
     models.CommonTimestampsField
 }
 
-func ({{VariableName}} *{{StructName}}) Create(tx *gorm.DB) error  {
-     if tx != nil {
-       return tx.Create({{VariableName}}).Error
-    }else{
-       return database.DB.Create({{VariableName}}).Error
-    }
-}
+var TableName = "{{PackageName}}"
 
-func ({{VariableName}} *{{StructName}}) CreateBatch(batch []{{StructName}},tx *gorm.DB) error {
-      if tx != nil {
-        return  tx.Create(batch).Error
-      }else{
-        return database.DB.Create(batch).Error
-      }
+func ({{VariableName}} *{{StructName}}) Save(tx *gorm.DB) error {
+	if tx == nil {
+		tx = database.DB
+	}
+	if {{VariableName}}.ID != 0 {
+		return tx.Model({{VariableName}}).Updates({{VariableName}}).Error
+	}
+	return tx.Create({{VariableName}}).Error
 }
-
-func ({{VariableName}} *{{StructName}}) Del(opt models.SqlOpt , tx *gorm.DB) error {
-    if tx == nil {
-        tx =  database.DB
-    }
-    for key,val := range  opt.Where{
-        tx = tx.Where(key,val)
-    }
-    return tx.Delete({{StructName}}{}).Error
-}
-
-func ({{VariableName}} *{{StructName}}) Update(data map[string]interface{}, where map[string]interface{} , tx *gorm.DB) error {
-    if tx == nil {
-        tx =  database.DB
-    }
-    for key,val := range where{
-        tx = tx.Where(key,val)
-    }
-    return tx.Model({{StructName}}{}).Updates(data).Error
-}
-
 

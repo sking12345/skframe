@@ -11,12 +11,23 @@ type CommonTimestampsField struct {
 	//UpdatedAt time.Time `gorm:"column:updated_at;index;" json:"updated_at,omitempty"`
 }
 
+type delStatus struct {
+	YES, NO uint8
+}
+
+var DelStatus = delStatus{
+	YES: 1,
+	NO:  0,
+}
+
 type SqlOpt struct {
-	Field  string
-	Where  map[string]interface{}
-	Order  string
-	Join   string
-	Group  string
-	Limit  int
-	Offset int
+	Field         string
+	Where         map[string]interface{}
+	Order         string
+	Join          string
+	LeftJoinTable string
+	LeftJoinOn    string
+	Group         string
+	Limit         int
+	Offset        int
 }

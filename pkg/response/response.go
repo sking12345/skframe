@@ -11,15 +11,15 @@ import (
 )
 
 type Response struct {
-	Code   int         `json:"code,omitempty"`
-	Msg    interface{} `json:"msg,omitempty"`
+	Code   int         `json:"code"`
+	Msg    interface{} `json:"msg"`
 	Result interface{} `json:"result,omitempty"`
 	Errors interface{} `json:"errors,omitempty"`
 }
 
 const (
-	SuccessStatus = 0
-	FailStatus    = -1
+	SuccessStatus = 1
+	FailStatus    = 0
 )
 
 // JSON 响应 200 和 JSON 数据
@@ -33,6 +33,19 @@ func Success(ctx interface{}, data interface{}) bool {
 		}
 	case "*gin.Context":
 		ctx.(*gin.Context).JSON(http.StatusOK, response)
+	}
+	return true
+}
+
+func DictSuccess(ctx interface{}, data interface{}) bool {
+	switch reflect.TypeOf(ctx).String() {
+	case "*ws.Context":
+		if err := ctx.(*ws.Context).Conn.WriteJSON(data); err != nil {
+			logger.Warn("ws", zap.Error(err))
+			return false
+		}
+	case "*gin.Context":
+		ctx.(*gin.Context).JSON(http.StatusOK, data)
 	}
 	return true
 }

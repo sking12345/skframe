@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"skframe/app/controlles"
 	"skframe/pkg/console"
 	"skframe/pkg/helpers"
 	"skframe/pkg/jwt"
-	"skframe/pkg/ws"
 )
 
 func authJWT() gin.HandlerFunc { //用户token 验证
@@ -34,26 +32,28 @@ func guestJWT() gin.HandlerFunc { //游客访问
 	}
 }
 
-func RegisterAPIRoutes(ginEngine *gin.Engine) {
-	userCtl := new(controlles.UserController)
-	ginEngine.POST("/register", guestJWT(), func(context *gin.Context) {
-		userCtl.Register(context)
-	})
-	ginEngine.POST("/login", guestJWT(), func(context *gin.Context) {
-		userCtl.Login(context)
-	})
-	ginEngine.POST("/add/friend", guestJWT(), func(context *gin.Context) {
-		userCtl.AddFriend(context)
+func Cors() gin.HandlerFunc { //跨域
+	return func(c *gin.Context) {
+		method := c.Request.Method
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token")
+		c.Header("Access-Control-Allow-Methods", "POST, GET")
+		c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
+		c.Header("Access-Control-Allow-Credentials", "true")
+
+		// 放行所有OPTIONS方法，因为有的模板是要请求两次的
+		if method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+		}
+		// 处理请求
+		c.Next()
+	}
+}
+
+func RegisterAPIRoutes(router *gin.Engine) {
+	router.Use(Cors())
+	router.GET("/test", func(context *gin.Context) {
+		fmt.Println("xx")
 	})
 
-}
-func wsJwt(ctx *ws.Context) {
-	ctx.Next()
-}
-
-func RegisterSocketRoutes(ctx *ws.Engine) {
-	//testCtl := new(controlles.TestController)
-	//ctx.GET("/", wsJwt, func(context *ws.Context) {
-	//	testCtl.CreatTokenTest(context)
-	//})
 }

@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
-	"skframe/bootstrap"
 	"skframe/pkg/config"
 	"skframe/pkg/console"
 	"skframe/pkg/logger"
@@ -25,9 +24,15 @@ func runHttpWeb(cmd *cobra.Command, args []string) {
 	// 故此设置为 release，有特殊情况手动改为 debug 即可
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	bootstrap.SetupRoute(router)
-	console.Info("start http,port:" + config.Get("app.port"))
-	if err := router.Run(":" + config.Get("app.port")); err != nil {
+
+	handlerFun := config.GetInterface("web.routeHandler")
+	if handlerFun == nil {
+
+		console.Exit("rpc.micro handler nil")
+	}
+	handlerFun.(func(router *gin.Engine))(router)
+	console.Info("start http,port:" + config.Get("web.port"))
+	if err := router.Run(":" + config.Get("web.port")); err != nil {
 		logger.ErrorString("CMD", "httpServer", err.Error())
 		console.Exit("Unable to start server, error:" + err.Error())
 	}

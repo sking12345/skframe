@@ -1,0 +1,50 @@
+package requests
+
+import (
+	"github.com/thedevsaddam/govalidator"
+)
+
+type {{StructName}}SaveRequest struct {
+    Id      uint64  `json:"id" form:"id" uri:"id" valid:"id"`
+}
+
+func {{StructName}}SaveRequestVer(data interface{}) map[string][]string {
+	rules := govalidator.MapData{
+
+	}
+	messages := govalidator.MapData{}
+	errs := validate(data, rules, messages)
+	return errs
+}
+
+
+
+type {{StructName}}DelRequest struct {
+    Id uint64 `json:"id" form:"id"  valid:"id"`
+}
+
+func {{StructName}}DelRequestVer(data interface{}) map[string][]string {
+	rules := govalidator.MapData{
+        "id": []string{"required"},
+	}
+	messages := govalidator.MapData{}
+	errs := validate(data, rules, messages)
+	return errs
+}
+
+type {{StructName}}GetListRequest struct {
+    	Page int `json:"page" form:"page" uri:"page" valid:"page"`
+    	Size int `json:"size" form:"size" uri:"size" valid:"size"`
+}
+
+func {{StructName}}GetListRequestVer(data interface{}) map[string][]string {
+	rules := govalidator.MapData{
+        "page": []string{"required"},
+		"size": []string{"required"},
+	}
+	messages := govalidator.MapData{}
+	errs := validate(data, rules, messages)
+	return errs
+}
+
+
